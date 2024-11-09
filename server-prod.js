@@ -61,7 +61,11 @@ app.post('/broadcast', (req, res) => {
     }
 });
 
-// Iniciar servidor HTTP
+const os = require('os'); // Requerir el módulo 'os' para obtener el nombre del host
+
 server.listen(3000, () => {
-    console.log('HTTP server running on port 3000');
+    const hostName = os.hostname(); // Obtiene el nombre del servidor
+    const port = server.address().port; // Obtiene el puerto actual
+    
+    console.log(`Servidor HTTP corriendo en el host ${hostName} y en el puerto ${port}`);
 });
