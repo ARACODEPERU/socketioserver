@@ -85,7 +85,8 @@ app.post("/send-emails", async (req, res) => {
         let correo = {
             title: correos.asunto,
             type: correos.correoDefault,
-            contact: contact
+            contact: contact,
+            message: correos.mensaje
         };
 
         try {
