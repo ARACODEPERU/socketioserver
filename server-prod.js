@@ -32,6 +32,11 @@ io.on('connection', (socket) => {
     });
 });
 
+app.get("/", (req, res) => {
+    res.send("Servidor funcionando correctamente");
+});
+
+
 app.post('/broadcast', (req, res) => {
     const { channel, event, data } = req.body;
 
@@ -59,6 +64,60 @@ app.post('/broadcast', (req, res) => {
         console.error('Error al emitir el evento:', error);
         res.status(500).send('Error broadcasting event');
     }
+});
+
+
+app.post("/send-emails", async (req, res) => {
+    const correos = req.body;
+    res.setHeader("Content-Type", "application/json");
+
+    // Crear un agente HTTPS que ignore certificados autofirmados
+    const httpsAgent = new https.Agent({
+        rejectUnauthorized: false,
+    });
+    //console.log('api',correos.urlBacken);
+    for (const contact of correos.para) {
+        let correo = {
+            title: correos.asunto,
+            type: correos.correoDefault,
+            contact: contact
+        };
+
+        try {
+            // Enviar solicitud con Axios
+            const response = await axios.post(correos.urlBacken,{'correo': correo}, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": correos.csrfToken // Agregar el token CSRF aquí
+                },
+                httpsAgent, // Pasar el agente personalizado
+            });
+
+            // Manejar el resultado exitoso
+
+            // Emitir el resultado del contacto al cliente en tiempo real
+            io.emit('email-status', {
+                name: contact.name,
+                email: contact.email,
+                status: response.data.success ? 'Enviado correctamente' :'Error al enviar',
+                result: response.data
+            });
+
+        } catch (error) {
+            // Manejar errores al enviar la solicitud
+            console.error(`Error al enviar correo a ${contact.email}:`, error.message);
+
+            // Emitir el resultado de error al cliente en tiempo real
+            io.emit('email-status', {
+                name: contact.name,
+                email: contact.email,
+                status: 'error al enviar',
+                error: error.message
+            });
+        }
+    }
+
+    res.end();
 });
 
 const os = require('os'); // Requerir el módulo 'os' para obtener el nombre del host
