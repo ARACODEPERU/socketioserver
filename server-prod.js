@@ -76,6 +76,8 @@ app.post("/send-emails", async (req, res) => {
     const httpsAgent = new https.Agent({
         rejectUnauthorized: false,
     });
+
+    let channelListen = correos.channelListen;
     //console.log('api',correos.urlBacken);
     for (const contact of correos.para) {
         let correo = {
@@ -98,7 +100,7 @@ app.post("/send-emails", async (req, res) => {
             // Manejar el resultado exitoso
 
             // Emitir el resultado del contacto al cliente en tiempo real
-            io.emit('email-status', {
+            io.emit(channelListen, {
                 name: contact.name,
                 email: contact.email,
                 status: response.data.success ? 'Enviado correctamente' : 'Error al enviar',
@@ -110,7 +112,7 @@ app.post("/send-emails", async (req, res) => {
             console.error(`Error al enviar correo a ${contact.email}:`, error.message);
 
             // Emitir el resultado de error al cliente en tiempo real
-            io.emit('email-status', {
+            io.emit(channelListen, {
                 name: contact.name,
                 email: contact.email,
                 status: 'error al enviar',
