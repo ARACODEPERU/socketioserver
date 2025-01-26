@@ -86,7 +86,7 @@ app.post("/send-emails", async (req, res) => {
 
         try {
             // Enviar solicitud con Axios
-            const response = await axios.post(correos.urlBacken,{'correo': correo}, {
+            const response = await axios.post(correos.urlBacken, { 'correo': correo }, {
                 headers: {
                     "Content-Type": "application/json",
                     "X-CSRF-TOKEN": correos.csrfToken // Agregar el token CSRF aquí
@@ -100,7 +100,7 @@ app.post("/send-emails", async (req, res) => {
             io.emit('email-status', {
                 name: contact.name,
                 email: contact.email,
-                status: response.data.success ? 'Enviado correctamente' :'Error al enviar',
+                status: response.data.success ? 'Enviado correctamente' : 'Error al enviar',
                 result: response.data
             });
 
@@ -123,7 +123,7 @@ app.post("/send-emails", async (req, res) => {
 
 const os = require('os'); // Requerir el módulo 'os' para obtener el nombre del host
 
-server.listen(3001, () => {
+server.listen(3000, () => {
     const hostName = os.hostname();
     const port = server.address().port;
     console.log(`Servidor HTTP corriendo en el host ${hostName} y en el puerto ${port}`);
