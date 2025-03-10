@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
+const { setupSocket } = require('./src/config/socket'); // Configuración de Socket.IO
 const app = express();
 
 // Usar body-parser para procesar JSON
