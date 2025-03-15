@@ -1,12 +1,18 @@
 const axios = require('axios');
 const https = require('https');
 const xlsx = require('xlsx');
+//const pLimit = require('p-limit');
+const getPLimit = async () => (await import('p-limit')).default;
+
+const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+const CONCURRENCY_LIMIT = 5; // Ajustar según la capacidad del servidor
 
 exports.sendEmailService = async (data) => {
-    const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+    const pLimit = await getPLimit();
+    const limit = pLimit(CONCURRENCY_LIMIT);
     let results = [];
-    
-    for (const contact of data.para) {
+
+    await Promise.all(data.para.map(contact => limit(async () => {
         let correo = {
             title: data.asunto,
             type: data.correoDefault,
@@ -14,15 +20,15 @@ exports.sendEmailService = async (data) => {
             message: data.mensaje
         };
         try {
-            console.log('Academico Servicio');
-            const response = await axios.post(data.urlBacken, { 'correo': correo }, {
+            console.log('Enviando correo a:', contact.email);
+            const response = await axios.post(data.urlBacken, { correo }, {
                 headers: {
                     "Content-Type": "application/json",
                     "X-CSRF-TOKEN": data.csrfToken
                 },
                 httpsAgent,
             });
-
+            
             global.io.emit(data.channelListen, {
                 success: response.data.success,
                 name: contact.name,
@@ -30,7 +36,6 @@ exports.sendEmailService = async (data) => {
                 status: response.data.success ? 'Enviado correctamente' : 'Error al enviar',
                 result: response.data,
             });
-
             results.push({ contact, status: 'Enviado correctamente' });
         } catch (error) {
             global.io.emit(data.channelListen, {
@@ -40,58 +45,45 @@ exports.sendEmailService = async (data) => {
                 status: 'Error al enviar',
                 error: error.message
             });
-
             results.push({ contact, status: 'Error al enviar', error: error.message });
         }
-    }
+    })));
 
     return { message: "Proceso completado", results };
 };
 
 exports.importStudentsExcelService = async (datos) => {
-    const httpsAgent = new https.Agent({ rejectUnauthorized: false });
     const file = datos.file;
-    const course_id = datos.body.course_id;
-    const csrfToken = datos.body.csrfToken;
-    const urlBacken = datos.body.urlBacken;
-    const channelListen = datos.body.channelListen;
-    const modality_id = datos.body.modality_id;
-
+    const { course_id, csrfToken, urlBacken, channelListen, modality_id } = datos.body;
+    
     const workbook = xlsx.read(file.buffer, { type: "buffer" });
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
-    const data = xlsx.utils.sheet_to_json(sheet); // Convierte a un array de objetos
+    const data = xlsx.utils.sheet_to_json(sheet);
+    const pLimit = await getPLimit();
+    const limit = pLimit(CONCURRENCY_LIMIT);
     let results = [];
 
-    for (const [index, row] of data.entries()) {
-        
-        // if (index === 0) {
-        //     continue; // Saltar la primera fila (encabezado)
-        // }
-
-        // Convertir el objeto en un array de valores
+    await Promise.all(data.map((row, index) => limit(async () => {
         let rowData = Object.values(row);
-
-        // Convertir la fecha (suponiendo que la fecha está en la tercera posición, índice 2)
-        if (!isNaN(rowData[2])) { // Verificar si es un número (Excel usa números de serie para fechas)
-            const excelDate = new Date((rowData[2] - 25569) * 86400 * 1000); // Convertir número a fecha
-            rowData[2] = excelDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+        if (!isNaN(rowData[2])) {
+            const excelDate = new Date((rowData[2] - 25569) * 86400 * 1000);
+            rowData[2] = excelDate.toISOString().split('T')[0];
         }
 
-        // Ignorar filas completamente vacías
         if (rowData.every(cell => cell === "" || cell === null || cell === undefined)) {
-            continue;
+            return;
         }
 
         try {
-            const response = await axios.post(urlBacken, { 'student': rowData,'course_id': course_id, 'index': index,'modality_id': modality_id }, {
+            const response = await axios.post(urlBacken, { student: rowData, course_id, index, modality_id }, {
                 headers: {
                     "Content-Type": "application/json",
                     "X-CSRF-TOKEN": csrfToken
                 },
                 httpsAgent,
             });
-            
+
             global.io.emit(channelListen, {
                 success: response.data.success,
                 dni: rowData[1],
@@ -102,7 +94,6 @@ exports.importStudentsExcelService = async (datos) => {
 
             results.push({ row, status: "success", response: response.data });
         } catch (error) {
-            console.log(error.message)
             global.io.emit(channelListen, {
                 success: false,
                 dni: rowData[1],
@@ -113,8 +104,7 @@ exports.importStudentsExcelService = async (datos) => {
             });
             results.push({ row, status: "error", error: error.message });
         }
-    }
-
+    })));
 
     return { message: "Proceso completado", results };
 };

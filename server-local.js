@@ -30,6 +30,7 @@ setupSocket(server);
 
 app.use('/api/academic', require('./src/routes/academic'));
 app.use('/api/onlineshop', require('./src/routes/onlineshop'));
+app.use('/api/crm', require('./src/routes/crm'));
 
 // Iniciar servidor HTTPS
 server.listen(3000, () => {

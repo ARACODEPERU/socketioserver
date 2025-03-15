@@ -19,6 +19,7 @@ setupSocket(server);
 
 app.use('/api/academic', require('./src/routes/academic'));
 app.use('/api/onlineshop', require('./src/routes/onlineshop'));
+app.use('/api/crm', require('./src/routes/crm'));
 
 const os = require('os'); // Requerir el módulo 'os' para obtener el nombre del host
 
