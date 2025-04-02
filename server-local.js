@@ -4,6 +4,7 @@ const https = require('https');
 const bodyParser = require('body-parser'); // Asegúrate de que body-parser esté importado
 const cors = require('cors');
 const { setupSocket } = require('./src/config/socket'); // Configuración de Socket.IO
+const { PORT } = require("./src/config/environment");
 
 const app = express();
 
@@ -31,8 +32,9 @@ setupSocket(server);
 app.use('/api/academic', require('./src/routes/academic'));
 app.use('/api/onlineshop', require('./src/routes/onlineshop'));
 app.use('/api/crm', require('./src/routes/crm'));
+app.use('/api/ai', require('./src/routes/openai'));
 
 // Iniciar servidor HTTPS
-server.listen(3000, () => {
-    console.log('HTTPS server running on port 3000');
+server.listen(PORT, () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
 });

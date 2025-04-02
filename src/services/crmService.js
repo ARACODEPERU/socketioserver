@@ -15,7 +15,7 @@ exports.sendMessageChatService = async (reqbody) => {
         console.log('Datos recibidos:', { channel, event, data });
 
         // Verifica si hay clientes conectados al canal
-        const clients = global.io.sockets.adapter.rooms.get('channel-message.1');
+        const clients = global.io.sockets.adapter.rooms.get(channelName);
         if (clients) {
             console.log(`Número de clientes en el canal ${channelName}: ${clients.size}`);
         } else {
