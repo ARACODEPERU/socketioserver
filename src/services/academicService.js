@@ -20,7 +20,7 @@ exports.sendEmailService = async (data) => {
             message: data.mensaje
         };
         try {
-            console.log('Enviando correo a:', contact.email);
+            //console.log('Enviando correo a:', contact.email);
             const response = await axios.post(data.urlBacken, { correo }, {
                 headers: {
                     "Content-Type": "application/json",
