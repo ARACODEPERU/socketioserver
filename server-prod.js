@@ -4,6 +4,7 @@ const cors = require('cors');
 const { setupSocket } = require('./src/config/socket'); 
 const { PORT } = require("./src/config/environment");// Configuración de Socket.IO
 const app = express();
+const https = require('https');
 
 // Usar body-parser para procesar JSON
 app.use(bodyParser.json());
