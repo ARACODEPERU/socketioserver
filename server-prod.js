@@ -12,7 +12,9 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Crear servidor HTTP (en lugar de HTTPS)
-const server = require('https').createServer(app);
+
+const server = https.createServer(credentials, app);
+//const server = require('http').createServer(app);
 
 // Configurar Socket.IO con CORS habilitado
 
