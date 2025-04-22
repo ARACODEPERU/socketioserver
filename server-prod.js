@@ -14,6 +14,10 @@ app.use(cors());
 
 // Crear servidor HTTP (en lugar de HTTPS)
 
+// Leer certificados SSL
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/sv-nxpjlr3ztb.cloud.elastika.pe/fullchain.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/sv-nxpjlr3ztb.cloud.elastika.pe/privkey.pem', 'utf8');
+const credentials = { key: privateKey, cert: certificate };
 const server = https.createServer(credentials, app);
 //const server = require('http').createServer(app);
 
