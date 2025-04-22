@@ -1,21 +1,24 @@
-const http = require('http');
 const WebSocket = require('ws');
-
-const server = http.createServer((req, res) => {
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.end('WebSocket server');
-});
-
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocket.Server({ port: 8080 });
 
 wss.on('connection', function connection(ws) {
-    console.log('New WebSocket connection');
-    // Aquí puedes manejar las conexiones WebSocket
+    ws.on('message', function incoming(message) {
+        // Aquí puedes manejar los mensajes recibidos
+        console.log('Mensaje recibido: %s', message);
+
+        // Reenviar el mensaje a todos los clientes conectados
+        wss.clients.forEach(function each(client) {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(message);
+            }
+        });
+    });
+
+    // Enviar un mensaje cuando un nuevo cliente se conecta
+    ws.send('¡Bienvenido al chat!');
 });
 
-server.listen(3000, 'localhost', () => {
-    console.log('Server running at http://localhost:3000/');
-});
+console.log('Servidor WebSocket corriendo en ws://localhost:8080/');
 
 
 
