@@ -19,7 +19,6 @@ function setupSocket(server) {
 
     global.io = io; // Hacerlo accesible en otras partes del código
 
-    console.log('socket.io: ACTIVO')
 }
 
 module.exports = { setupSocket };

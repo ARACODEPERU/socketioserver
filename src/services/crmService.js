@@ -4,7 +4,7 @@ const https = require('https');
 exports.sendMessageChatService = async (reqbody) => {
     
     const { channel, event, data } = reqbody;
-
+    
     if (!channel || !event || !data) {
         return { status: 400, message: "Invalid payload" };
     }
@@ -24,8 +24,10 @@ exports.sendMessageChatService = async (reqbody) => {
 
         // Emitir el evento al canal correspondiente
 
-        global.io.sockets.emit(channelName, { event, data});
+        global.io.emit(channelName, { event, data});
+
         return { status: 200, message: "Event broadcasted" };
+        
     } catch (error) {
         console.error('Error al emitir el evento:', error);
         return { status: 500, message: "Error broadcasting event" };
