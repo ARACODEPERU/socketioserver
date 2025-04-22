@@ -1,11 +1,9 @@
 const express = require('express');
-const fs = require('fs');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { setupSocket } = require('./src/config/socket'); 
 const { PORT } = require("./src/config/environment");// Configuración de Socket.IO
 const app = express();
-const https = require('https');
 
 // Usar body-parser para procesar JSON
 app.use(bodyParser.json());
@@ -14,13 +12,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Crear servidor HTTP (en lugar de HTTPS)
-
-// Leer certificados SSL
-const privateKey = fs.readFileSync('/etc/letsencrypt/live/sv-nxpjlr3ztb.cloud.elastika.pe/fullchain.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/sv-nxpjlr3ztb.cloud.elastika.pe/privkey.pem', 'utf8');
-const credentials = { key: privateKey, cert: certificate };
-const server = https.createServer(credentials, app);
-//const server = require('http').createServer(app);
+const server = require('http').createServer(app);
 
 // Configurar Socket.IO con CORS habilitado
 
