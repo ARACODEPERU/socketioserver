@@ -8,12 +8,12 @@ function setupSocket(server) {
         }
     });
 
-    console.log('🟢 Socket.IO inicializado');
+    console.log('Socket.IO inicializado');
 
     io.on('connection', (socket) => {
-        console.log('✅ Cliente conectado a Socket.IO');
+        console.log('Cliente conectado a Socket.IO');
         socket.on('disconnect', () => {
-            console.log('🔌 Cliente desconectado');
+            console.log('Cliente desconectado');
         });
     });
 
