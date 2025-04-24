@@ -18,8 +18,8 @@ app.use(cors());
 
 
 // Leer certificados SSL
-const privateKey = fs.readFileSync('D:/laragon/etc/ssl/laragon.key', 'utf8');
-const certificate = fs.readFileSync('D:/laragon/etc/ssl/laragon.crt', 'utf8');
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/sv-nxpjlr3ztb.cloud.elastika.pe/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/sv-nxpjlr3ztb.cloud.elastika.pe/fullchain.pem', 'utf8');
 const credentials = { key: privateKey, cert: certificate };
 
 // Crear servidor HTTPS
