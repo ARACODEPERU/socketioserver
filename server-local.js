@@ -32,7 +32,8 @@ setupSocket(server);
 app.use('/api/academic', require('./src/routes/academic'));
 app.use('/api/onlineshop', require('./src/routes/onlineshop'));
 app.use('/api/crm', require('./src/routes/crm'));
-app.use('/api/ai', require('./src/routes/geminiAI'));
+app.use('/api/ai', require('./src/routes/openai'));
+
 // Iniciar servidor HTTPS
 server.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);

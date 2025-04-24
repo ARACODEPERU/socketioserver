@@ -3,22 +3,21 @@ const socketIO = require('socket.io');
 function setupSocket(server) {
     const io = socketIO(server, {
         cors: {
-            origin: "*", // En producción, especifica el dominio permitido
-            methods: ["GET", "POST","PUT"],
-            allowedHeaders: ["Access-Control-Allow-Origin", "Content-Type"],
-            credentials: true
+            origin: "*",
+            methods: ["GET", "POST"],
         }
     });
 
+    console.log('🟢 Socket.IO inicializado');
+
     io.on('connection', (socket) => {
-        console.log('Nuevo cliente conectado ARACODE');
+        console.log('✅ Cliente conectado a Socket.IO');
         socket.on('disconnect', () => {
-            console.log('Cliente desconectado ARACODE');
+            console.log('🔌 Cliente desconectado');
         });
     });
 
-    global.io = io; // Hacerlo accesible en otras partes del código
-
+    global.io = io;
 }
 
 module.exports = { setupSocket };
