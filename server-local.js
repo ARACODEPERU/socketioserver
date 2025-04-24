@@ -32,7 +32,7 @@ setupSocket(server);
 app.use('/api/academic', require('./src/routes/academic'));
 app.use('/api/onlineshop', require('./src/routes/onlineshop'));
 app.use('/api/crm', require('./src/routes/crm'));
-app.use('/api/ai', require('./src/routes/openai'));
+app.use('/api/ai', require('./src/routes/geminiAI'));
 
 // Iniciar servidor HTTPS
 server.listen(PORT, () => {
