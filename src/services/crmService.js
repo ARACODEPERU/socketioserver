@@ -1,18 +1,14 @@
 const axios = require('axios');
-const https = require('https');
 
 exports.sendMessageChatService = async (reqbody) => {
+
+    const { channelName, participants, message, ofUserId } = reqbody;
     
-    const { channel, event, data } = reqbody;
-    
-    if (!channel || !event || !data) {
+    if (!channelName || !participants || !message || !ofUserId) {
         return { status: 400, message: "Invalid payload" };
     }
 
     try {
-        const channelName = channel.name; // Obtener el nombre del canal
-        console.log('Emit event to channel:', channelName);
-        console.log('Datos recibidos:', { channel, event, data });
 
         // Verifica si hay clientes conectados al canal
         const clients = global.io.sockets.adapter.rooms.get(channelName);
@@ -24,7 +20,13 @@ exports.sendMessageChatService = async (reqbody) => {
 
         // Emitir el evento al canal correspondiente
 
-        global.io.emit(channelName, { event, data});
+        global.io.emit(channelName, { 
+            data: {
+                message: message,
+                participants: participants,
+            },
+            ofUserId: ofUserId
+        });
 
         return { status: 200, message: "Event broadcasted" };
         
