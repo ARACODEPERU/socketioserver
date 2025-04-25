@@ -39,7 +39,7 @@ exports.sendEmailTicketService = async (datos) => {
                 step: 1,
                 data: { document, message }
             });
-            console.log('success 1', success);
+            console.log('success 1', response.data);
             // Si la boleta se generó correctamente, proceder con el envío del correo
             if (success) {
                 const emailData = {
@@ -57,7 +57,7 @@ exports.sendEmailTicketService = async (datos) => {
                     },
                     httpsAgent,
                 });
-                console.log('emailData 1', emailResponse);
+                console.log('emailResponse 2', emailResponse);
                 // 4. Emitir confirmación de envío de correo
                 global.io.emit(datos.channelListen, {
                     status: emailResponse.data.success,
