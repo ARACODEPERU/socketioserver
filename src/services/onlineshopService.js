@@ -20,7 +20,7 @@ exports.sendEmailTicketService = async (datos) => {
             userId: datos.userId
         }
 
-        // try {
+         try {
             // 1. Enviar solicitud para generar la boleta
             const response = await axios.post(datos.apiBackenStepOne, { 'pedido': pedido }, {
                 headers: {
@@ -65,15 +65,15 @@ exports.sendEmailTicketService = async (datos) => {
                     data: emailResponse.data.correosMessage
                 });
             }
-        // } catch (error) {
-        //     console.error("Error en el proceso:", error.message);
+        } catch (error) {
+            console.error("Error en el proceso:", error.message);
             
-        //     // Emitir error al usuario
-        //     global.io.emit(datos.channelListen, {
-        //         status: "error",
-        //         error: error.message
-        //     });
-        // }
+            // Emitir error al usuario
+            global.io.emit(datos.channelListen, {
+                status: "error",
+                error: error.message
+            });
+        }
     }
 
     return { message: "Proceso completado", results };
