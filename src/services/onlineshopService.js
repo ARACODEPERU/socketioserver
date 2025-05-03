@@ -19,7 +19,7 @@ exports.sendEmailTicketService = async (datos) => {
             local: datos.local,
             userId: datos.userId
         }
-        //console.log(pedido);
+        console.log(pedido);
          try {
             // 1. Enviar solicitud para generar la boleta
             const response = await axios.post(datos.apiBackenStepOne, { 'pedido': pedido }, {
