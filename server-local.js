@@ -8,10 +8,13 @@ const { PORT } = require("./src/config/environment");
 
 const app = express();
 
-// Usar body-parser para procesar JSON
-app.use(bodyParser.json());
+//// Usar body-parser para procesar JSON
+// app.use(bodyParser.json());
+//// Necesario para recibir archivos
+// app.use(express.urlencoded({ extended: true })); 
 
-app.use(express.urlencoded({ extended: true })); // Necesario para recibir archivos
+app.use(bodyParser.json({ limit: '20mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '20mb' }));
 // Configurar CORS
 app.use(cors());
 

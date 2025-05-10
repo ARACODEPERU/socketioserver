@@ -108,3 +108,44 @@ exports.importStudentsExcelService = async (datos) => {
 
     return { message: "Proceso completado", results };
 };
+
+exports.generateAndSendInvoicesService = async (data) => {
+    const pLimit = await getPLimit();
+    const limit = pLimit(CONCURRENCY_LIMIT);
+    let results = [];
+    // console.log(JSON.stringify(data, null, 2));
+    await Promise.all(data.registrations.map(registration => limit(async () => {
+        try {
+            let formRegistration = {
+                registration: registration,
+                userId: data.userId
+            }
+            const response = await axios.post(data.urlBacken, formRegistration , {
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": data.csrfToken
+                },
+                httpsAgent,
+            });
+            
+            global.io.emit(data.channelListen, {
+                success: response.data.success,
+                name: registration.student.person.full_name,
+                email: registration.student.person.email,
+                result: response.data,
+            });
+            results.push({ registration, status: 'Enviado correctamente' });
+        } catch (error) {
+            global.io.emit(data.channelListen, {
+                success: false,
+                name: registration.student.person.full_name,
+                email: registration.student.person.email,
+                status: 'Error al enviar',
+                error: error.message
+            });
+            results.push({ registration, status: 'Error al enviar', error: error.message });
+        }
+    })));
+
+    return { message: "Proceso completado", results };
+};
